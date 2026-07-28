@@ -1,4 +1,3 @@
 Flask
-Flask-Cors
-requests
-
+    Flask-Cors
+    python-telegram-bot
